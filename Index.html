@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f766e">
+<title>OB/GYN History Trainer</title>
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--ink:#17202a;--muted:#64748b;--line:#dbe3e8;--brand:#0f766e;--brand2:#115e59;--soft:#ecfdf5;--warn:#fff7ed;--danger:#fff1f2;--shadow:0 8px 28px rgba(15,23,42,.07);--r:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{max-width:1180px;margin:auto;padding:18px}
+header{background:linear-gradient(135deg,#0f766e,#164e63);color:#fff;border-radius:22px;padding:24px;box-shadow:var(--shadow);margin-bottom:16px}
+header h1{margin:0 0 5px;font-size:clamp(24px,4vw,36px)}header p{margin:0;color:#dff7f3}
+.topbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.navbtn,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 14px;border-radius:11px;font-weight:700}
+.navbtn.active,.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.danger{background:#fff;color:#b91c1c;border-color:#fecaca}.btn.small{padding:7px 10px;font-size:13px}
+.screen{display:none}.screen.active{display:block}
+.homegrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.modecard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:var(--shadow);text-align:left}
+.modecard h2{margin:8px 0}.modecard p{color:var(--muted)}.modeicon{font-size:36px}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,.85fr);gap:16px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.card h2,.card h3{margin:0 0 12px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+label{display:block;font-weight:700;margin-bottom:5px}label span{font-weight:400;color:var(--muted);font-size:12px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+textarea{min-height:90px;resize:vertical}.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.check{display:flex;gap:8px;align-items:flex-start;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fbfdfe}.check input{width:auto;margin-top:4px}.check label{font-weight:600;margin:0}
+.note{background:var(--soft);border-left:4px solid var(--brand);padding:10px 12px;border-radius:8px;margin:10px 0;color:#134e4a}
+.warn{background:var(--warn);border-left:4px solid #f59e0b}.dangerbox{background:var(--danger);border-left:4px solid #e11d48}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi{padding:12px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}.kpi b{font-size:19px;display:block}.muted{color:var(--muted)}
+.sticky{position:sticky;top:12px}.output{min-height:430px;white-space:pre-wrap;line-height:1.7}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.pill{display:inline-block;padding:4px 9px;border-radius:999px;background:#e2e8f0;font-size:12px;font-weight:700}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#f8fafc}
+.history-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border:1px solid var(--line);padding:12px;border-radius:12px;margin-bottom:9px}.row-title{grid-column:1/-1;font-weight:800;color:var(--brand2)}
+.hidden{display:none!important}footer{color:var(--muted);font-size:12px;padding:14px 4px 28px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sticky{position:static}.homegrid{grid-template-columns:1fr}.grid,.grid3,.checks{grid-template-columns:1fr}.history-row{grid-template-columns:1fr 1fr}.app{padding:10px}}
+@media print{body{background:#fff}.app>header,.topbar,.leftcol,.toolbar,.no-print,footer{display:none!important}.layout{display:block}.card{box-shadow:none;border:0}.output{min-height:0}.rightcol{display:block!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>OB/GYN History Trainer</h1>
+  <p>Interactive history-taking checklist • clinical narrative generator • obstetric calculators</p>
+  <div class="topbar no-print">
+    <button class="navbtn active" data-screen="home">Home</button>
+    <button class="navbtn" data-screen="ob">Obstetrics History</button>
+    <button class="navbtn" data-screen="gyn">Gynecology History</button>
+  </div>
+</header>
+
+<section id="home" class="screen active">
+  <div class="card">
+    <h2>Choose a history</h2>
+    <p class="muted">The structure follows the supplied obstetric and gynecology case sheets, expanded with clinically useful history-taking elements from the supplied teaching notes.</p>
+  </div>
+  <div class="homegrid">
+    <button class="modecard" onclick="showScreen('ob')"><div class="modeicon">🤰</div><h2>Obstetrics History</h2><p>Current pregnancy, HPI, warning symptoms, ANC, trimester review, previous pregnancies, GTPAL and automatic EDD/GA/BMI calculations.</p><span class="pill">Start →</span></button>
+    <button class="modecard" onclick="showScreen('gyn')"><div class="modeicon">🩺</div><h2>Gynecology History</h2><p>HPI, menstrual, contraceptive, sexual, infertility, gynecologic, obstetric, menopause, medical, surgical, family and social history.</p><span class="pill">Start →</span></button>
+  </div>
+</section>
+
+<section id="ob" class="screen">
+<div class="layout">
+<div class="leftcol">
+  <div class="card">
+    <div class="sectionhead"><h2>1. Identification & admission</h2><span class="pill">Checklist</span></div>
+    <div class="grid">
+      <label>Patient name<input id="ob_name"></label><label>Age<input id="ob_age" type="number" min="0"></label>
+      <label>Occupation<input id="ob_occ"></label><label>Marital status<input id="ob_marital"></label>
+      <label>Address / residence<input id="ob_address"></label><label>Blood group / Rh<input id="ob_blood"></label>
+      <label>Husband/partner name<input id="ob_husband"></label><label>Partner age<input id="ob_hage" type="number"></label>
+      <label>Partner occupation<input id="ob_hocc"></label><label>Consanguinity<select id="ob_cons"><option value="">Not stated</option><option>No</option><option>Yes</option></select></label>
+      <label>Date of admission<input id="ob_adm" type="date"></label><label>Date history taken<input id="ob_histdate" type="date"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Gravidity, parity & dating</h2>
+    <div class="grid3">
+      <label>Gravida (G)<input id="ob_g" type="number" min="0" value="0"></label>
+      <label>Term births (T)<input id="ob_t" type="number" min="0" value="0"></label>
+      <label>Preterm births (P)<input id="ob_p" type="number" min="0" value="0"></label>
+      <label>Abortions (A)<input id="ob_a" type="number" min="0" value="0"></label>
+      <label>Living children (L)<input id="ob_l" type="number" min="0" value="0"></label>
+      <label>Current gestational age (if known)<input id="ob_ga_manual" placeholder="e.g. 28+4"></label>
+    </div>
+    <div class="grid">
+      <label>First day of LMP<input id="ob_lmp" type="date"></label>
+      <label>EDD (auto)<input id="ob_edd" readonly></label>
+      <label>GA from LMP (auto)<input id="ob_ga" readonly></label>
+      <label>Dating confidence<select id="ob_dating"><option>Not stated</option><option>Reliable LMP</option><option>Uncertain LMP</option><option>Early ultrasound dating</option><option>Redated by ultrasound</option></select></label>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="muted">GTPAL</span><b id="gtpal">G0 T0 P0 A0 L0</b></div>
+      <div class="kpi"><span class="muted">EDD</span><b id="eddKpi">—</b></div>
+      <div class="kpi"><span class="muted">GA</span><b id="gaKpi">—</b></div>
+    </div>
+    <div class="note">Dating note: LMP-based EDD is an estimate. Record the dating ultrasound and the established EDD when available, especially if LMP is uncertain or cycles are irregular.</div>
+  </div>
+
+  <div class="card">
+    <div class="sectionhead"><h2>3. Chief complaint & HPI</h2><span class="pill">SOCRATES + OB red flags</span></div>
+    <div class="grid">
+      <label>Chief complaint in patient's own words<textarea id="ob_cc"></textarea></label>
+      <label>Duration<textarea id="ob_ccdur"></textarea></label>
+      <label>HPI narrative / chronology<textarea id="ob_hpi"></textarea></label>
+      <label>Current status / awaiting<textarea id="ob_status" placeholder="Discharge, investigation, surgery, transfusion, observation..."></textarea></label>
+    </div>
+    <h3>Pain</h3><div class="checks" id="ob_pain_checks"></div>
+    <h3>Vaginal bleeding</h3><div class="checks" id="ob_bleed_checks"></div>
+    <h3>Leakage / watery vaginal discharge</h3><div class="checks" id="ob_leak_checks"></div>
+    <h3>Other presenting features</h3><div class="checks" id="ob_hpi_checks"></div>
+    <h3>Obstetric warning symptoms</h3><div class="checks" id="ob_warn_checks"></div>
+  </div>
+
+  <div class="card">
+    <h2>4. Current pregnancy</h2>
+    <div class="grid">
+      <label>Pregnancy conception<select id="ob_conception"><option>Not stated</option><option>Spontaneous</option><option>Ovulation induction</option><option>ART / assisted reproduction</option></select></label>
+      <label>Pregnancy confirmation<select id="ob_confirm"><option>Not stated</option><option>Urine hCG</option><option>Serum hCG</option><option>Ultrasound</option><option>Amenorrhea + clinical assessment</option></select></label>
+      <label>ANC visits / regularity<input id="ob_anc"></label>
+      <label>Dating / anomaly scan summary<input id="ob_us"></label>
+    </div>
+    <h3>First trimester</h3><div class="checks" id="ob_t1"></div>
+    <textarea id="ob_t1_notes" placeholder="First-trimester details, investigations, medications/exposures, complications..."></textarea>
+    <h3>Second trimester</h3><div class="checks" id="ob_t2"></div>
+    <textarea id="ob_t2_notes" placeholder="Quickening, screening, BP, urine, glucose testing, ultrasound, complications..."></textarea>
+    <h3>Third trimester</h3><div class="checks" id="ob_t3"></div>
+    <textarea id="ob_t3_notes" placeholder="Fetal movement, contractions, bleeding/leakage, edema, BP, urine, ultrasound, complications..."></textarea>
+  </div>
+
+  <div class="card">
+    <h2>5. Previous obstetric history</h2>
+    <div class="grid"><label>Date of marriage<input id="ob_marriage" type="date"></label><label>Last labor / delivery<input id="ob_lastdelivery" placeholder="e.g. 3 years ago"></label></div>
+    <div id="pregnancies"></div>
+    <button class="btn small no-print" onclick="addPregnancy()">+ Add pregnancy</button>
+  </div>
+
+  <div class="card">
+    <h2>6. Gynecologic history</h2>
+    <div class="grid">
+      <label>Age at menarche<input id="ob_menarche" type="number"></label><label>Cycle pattern<input id="ob_cycle"></label>
+      <label>Cycle length (days)<input id="ob_cyclelen" type="number"></label><label>Duration of flow (days)<input id="ob_flowdur" type="number"></label>
+      <label>Amount / sanitary products<input id="ob_flow"></label><label>Clots / flooding<input id="ob_clots"></label>
+      <label>Dysmenorrhea / mittelschmerz<input id="ob_dys"></label><label>Intermenstrual / postcoital bleeding<input id="ob_imb"></label>
+      <label>Contraception<input id="ob_contra"></label><label>Infertility history<input id="ob_infert"></label>
+      <label>Previous gynecologic conditions<input id="ob_gyncond"></label><label>Previous gynecologic operations<input id="ob_gynops"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>7. Medical, surgical, drugs & allergies</h2>
+    <div class="grid">
+      <label>Past medical history<textarea id="ob_pmh"></textarea></label><label>Past surgical history<textarea id="ob_psh"></textarea></label>
+      <label>Medications / supplements<textarea id="ob_meds"></textarea></label><label>Allergies + reaction<textarea id="ob_allergy"></textarea></label>
+      <label>Blood transfusion<textarea id="ob_transfusion"></textarea></label><label>Immunization history<textarea id="ob_immun"></textarea></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>8. Family & social history</h2>
+    <div class="grid">
+      <label>Family history<textarea id="ob_fam"></textarea></label><label>Social / socioeconomic history<textarea id="ob_social"></textarea></label>
+      <label>Smoking / passive smoking / substances<textarea id="ob_smoke"></textarea></label><label>Occupation / exposures / animals / water / sanitation<textarea id="ob_exposure"></textarea></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>9. Review of systems</h2>
+    <div class="checks" id="ob_ros"></div>
+    <textarea id="ob_ros_notes" placeholder="Additional positive/negative ROS details"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>10. Hospital course & investigations</h2>
+    <textarea id="ob_course" placeholder="Examination performed, vital signs, fetal heart rate, pelvic examination if relevant, blood tests, urine, ultrasound, treatment/interventions and response."></textarea>
+  </div>
+</div>
+
+<div class="rightcol sticky">
+  <div class="card">
+    <h2>Auto-calculators</h2>
+    <div class="grid">
+      <label>Weight (kg)<input id="ob_weight" type="number" step="0.1"></label>
+      <label>Height (cm)<input id="ob_height" type="number" step="0.1"></label>
+    </div>
+    <div class="kpis"><div class="kpi"><span class="muted">BMI</span><b id="bmi">—</b></div><div class="kpi"><span class="muted">Category</span><b id="bmiCat">—</b></div></div>
+  </div>
+  <div class="card">
+    <h2>Differential support</h2>
+    <p class="muted">Educational prompt only; this is not a diagnostic engine.</p>
+    <div id="ob_ddx"></div>
+  </div>
+  <div class="card">
+    <h2>Clinical narrative</h2>
+    <div class="toolbar no-print"><button class="btn primary" onclick="generateOB()">Generate</button><button class="btn" onclick="copyOut('ob_output')">Copy</button><button class="btn" onclick="printOutput('ob_output')">Export / PDF</button><button class="btn danger" onclick="resetForm('ob')">New patient</button></div>
+    <textarea id="ob_output" class="output" placeholder="Generated history will appear here. It remains fully editable."></textarea>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="gyn" class="screen">
+<div class="layout">
+<div class="leftcol">
+  <div class="card"><div class="sectionhead"><h2>1. Identification</h2><span class="pill">Checklist</span></div>
+    <div class="grid">
+      <label>Patient name<input id="g_name"></label><label>Age<input id="g_age" type="number"></label>
+      <label>Address / residence<input id="g_address"></label><label>Blood group / Rh<input id="g_blood"></label>
+      <label>Occupation<input id="g_occ"></label><label>Marital status<input id="g_marital"></label>
+      <label>Husband/partner name<input id="g_husband"></label><label>Partner age<input id="g_hage" type="number"></label>
+      <label>Partner occupation<input id="g_hocc"></label><label>Consanguinity<select id="g_cons"><option>Not stated</option><option>No</option><option>Yes</option></select></label>
+      <label>Date of admission<input id="g_adm" type="date"></label><label>Date history taken<input id="g_histdate" type="date"></label>
+    </div>
+  </div>
+  <div class="card"><h2>2. Gravidity & obstetric background</h2>
+    <div class="grid3"><label>Gravida<input id="g_g" type="number" min="0"></label><label>Term births<input id="g_t" type="number" min="0"></label><label>Preterm births<input id="g_p" type="number" min="0"></label><label>Abortions<input id="g_a" type="number" min="0"></label><label>Living children<input id="g_l" type="number" min="0"></label><label>GTPAL<input id="g_gtpal" readonly></label></div>
+    <textarea id="g_obhx" placeholder="Brief past obstetric history or important pregnancy/delivery complications."></textarea>
+  </div>
+  <div class="card"><h2>3. Chief complaint & HPI</h2>
+    <div class="grid"><label>Chief complaint<textarea id="g_cc"></textarea></label><label>Duration<textarea id="g_dur"></textarea></label><label>HPI / chronology<textarea id="g_hpi"></textarea></label><label>Current status<textarea id="g_status"></textarea></label></div>
+    <h3>Pelvic / abdominal pain</h3><div class="checks" id="g_pain"></div>
+    <h3>Abnormal vaginal bleeding</h3><div class="checks" id="g_bleed"></div>
+    <h3>Vaginal discharge / vulvovaginal symptoms</h3><div class="checks" id="g_discharge"></div>
+    <h3>Other gynecologic symptoms</h3><div class="checks" id="g_symptoms"></div>
+  </div>
+  <div class="card"><h2>4. Menstrual history</h2>
+    <div class="grid">
+      <label>Age at menarche<input id="g_menarche" type="number"></label><label>LMP<input id="g_lmp" type="date"></label>
+      <label>Cycle pattern<input id="g_cycle"></label><label>Cycle length (days)<input id="g_cyclelen" type="number"></label>
+      <label>Duration of flow (days)<input id="g_flowdur" type="number"></label><label>Amount / sanitary products<input id="g_flow"></label>
+      <label>Clots / flooding<input id="g_clots"></label><label>Dysmenorrhea / mittelschmerz<input id="g_dys"></label>
+      <label>Intermenstrual bleeding<input id="g_imb"></label><label>Postcoital bleeding<input id="g_pcb"></label>
+      <label>Premenstrual symptoms<input id="g_pms"></label><label>Medication during periods<input id="g_periodmeds"></label>
+    </div>
+  </div>
+  <div class="card"><h2>5. Contraceptive history</h2>
+    <div class="grid"><label>Current method<textarea id="g_contra"></textarea></label><label>Past methods / duration<textarea id="g_contrapast"></textarea></label><label>Complications / adverse effects<textarea id="g_contracomp"></textarea></label><label>Reason discontinued<textarea id="g_contrastop"></textarea></label></div>
+  </div>
+  <div class="card"><h2>6. Sexual history (when relevant and with consent)</h2>
+    <div class="grid"><label>Partners / relationship context<textarea id="g_partners"></textarea></label><label>Sexual activity / frequency<textarea id="g_frequency"></textarea></label><label>Dyspareunia<textarea id="g_dyspareunia"></textarea></label><label>Postcoital bleeding<textarea id="g_postcoital"></textarea></label><label>STI/PID risk or history<textarea id="g_sti"></textarea></label><label>Safety / intimate partner violence concerns<textarea id="g_safety"></textarea></label></div>
+  </div>
+  <div class="card"><h2>7. Past gynecologic & infertility history</h2>
+    <div class="grid"><label>Previous gynecologic problems<textarea id="g_gynproblems"></textarea></label><label>Previous gynecologic/pelvic operations<textarea id="g_gynops"></textarea></label><label>Infertility: type & duration<textarea id="g_inferttype"></textarea></label><label>Infertility investigations & treatment<textarea id="g_infertwork"></textarea></label><label>STI / PID / endometriosis / fibroids / PCOS / cysts / prolapse<textarea id="g_conditions"></textarea></label><label>Cervical screening / Pap / HPV / colposcopy<textarea id="g_screen"></textarea></label></div>
+  </div>
+  <div class="card"><h2>8. Menopause / perimenopause (if applicable)</h2>
+    <div class="grid"><label>Menopause / last menstrual period<textarea id="g_meno"></textarea></label><label>Postmenopausal bleeding<textarea id="g_pmb"></textarea></label><label>Vasomotor symptoms<textarea id="g_vaso"></textarea></label><label>Sleep / mood / sexual symptoms<textarea id="g_menosym"></textarea></label><label>Vaginal / urinary symptoms<textarea id="g_vagdry"></textarea></label><label>HRT now or previously<textarea id="g_hrt"></textarea></label></div>
+  </div>
+  <div class="card"><h2>9. Past medical, surgical, drugs & allergies</h2>
+    <div class="grid"><label>Medical history<textarea id="g_pmh"></textarea></label><label>Surgical / trauma history<textarea id="g_psh"></textarea></label><label>Medications / OTC / supplements / hormones<textarea id="g_meds"></textarea></label><label>Allergies + reaction<textarea id="g_allergy"></textarea></label><label>Blood transfusion<textarea id="g_trans"></textarea></label></div>
+  </div>
+  <div class="card"><h2>10. Family & social history</h2>
+    <div class="grid"><label>Family history<textarea id="g_fam"></textarea></label><label>Social / socioeconomic history<textarea id="g_social"></textarea></label><label>Smoking / alcohol / substances<textarea id="g_substances"></textarea></label><label>Occupation / relevant exposures<textarea id="g_exposure"></textarea></label></div>
+  </div>
+  <div class="card"><h2>11. Review of systems</h2><div class="checks" id="g_ros"></div><textarea id="g_ros_notes"></textarea></div>
+</div>
+<div class="rightcol sticky">
+  <div class="card"><h2>Differential support</h2><p class="muted">Symptom-based educational prompts; not a diagnosis.</p><div id="g_ddx"></div></div>
+  <div class="card"><h2>Clinical narrative</h2><div class="toolbar no-print"><button class="btn primary" onclick="generateGYN()">Generate</button><button class="btn" onclick="copyOut('g_output')">Copy</button><button class="btn" onclick="printOutput('g_output')">Export / PDF</button><button class="btn danger" onclick="resetForm('gyn')">New patient</button></div><textarea id="g_output" class="output" placeholder="Generated history will appear here. It remains fully editable."></textarea></div>
+</div>
+</div>
+</section>
+
+<footer>
+Educational tool for medical students. It is not a substitute for supervised clinical teaching, local protocols, or professional medical judgment.
+Core structure is based on the four supplied PDFs. Additional clinical structure was cross-checked against current professional educational references including AMBOSS and MSD Manual Professional.
+</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const val=id=>($(id)?.value||'').trim();
+const checked=id=>[...document.querySelectorAll('#'+id+' input:checked')].map(x=>x.value);
+function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.screen===id));window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>showScreen(b.dataset.screen));
+
+const groups={
+ob_pain_checks:['Site','Onset','Character/nature','Radiation','Severity','Frequency & duration of attacks','Aggravating/relieving factors','Associated symptoms','Course'],
+ob_bleed_checks:['Onset','Amount','Color','Clots','Odor','Aggravating/relieving factors','Lower abdominal pain','Fluid leakage','Fetal movement'],
+ob_leak_checks:['Onset','Color/clarity','Amount','Watery or mucus','Odor','Itching','Fever','Vaginal bleeding','Lower abdominal pain','Dysuria'],
+ob_hpi_checks:['Fetal movement','Uterine contractions','Nausea/vomiting','Fever/rigors','Urinary symptoms','Bowel symptoms','Headache','Visual disturbance','Edema','Chest pain/palpitations','Shortness of breath'],
+ob_warn_checks:['Vaginal bleeding','Gush/leakage of fluid','Abdominal/pelvic pain','Persistent headache','Blurred vision/visual symptoms','Hand or facial edema','Persistent vomiting','Reduced/absent fetal movement'],
+ob_t1:['Nausea/vomiting','Abdominal pain','Vaginal bleeding/discharge','Radiation exposure','Medication/drug exposure','Infection','Pregnancy confirmation','Dating ultrasound','Viability','Pregnancy location','Multiple pregnancy','Blood pressure','Blood tests','Urine/UTI','Hospital admission'],
+ob_t2:['Quickening/fetal movement','Abdominal pain/contractions','Vaginal bleeding/discharge','Fluid leakage','Edema','Pre-eclampsia symptoms','Anemia symptoms','ANC','Ultrasound fetal growth','Placenta location','Amniotic fluid','Congenital anomaly screening','Blood pressure','Blood tests','Urine/protein/UTI','Glucose screening','Vaccination'],
+ob_t3:['Fetal movement','Abdominal pain/contractions','Vaginal bleeding','Fluid leakage/discharge','Edema','Pre-eclampsia symptoms','Anemia symptoms','ANC','Ultrasound fetal growth','Placenta location','Amniotic fluid','Presentation','Blood pressure','Blood tests','Urine/protein/UTI','Hypertension','Diabetes','Medications'],
+ob_ros:['Fatigue/malaise','Fever/rigors/night sweats','Weight/appetite change','Sleep disturbance','Chest pain','Dyspnea/orthopnea/PND','Palpitations','Ankle swelling','Cough/wheeze','Sputum/hemoptysis','Nausea/vomiting','Heartburn/dysphagia','Jaundice','Abdominal pain','Constipation/diarrhea','GI bleeding','Dysuria/frequency/nocturia','Hematuria','Incontinence/urgency','Headache','Fits/faints/LOC','Dizziness','Vision change','Weakness/numbness','Anxiety/depression','Rash/pruritus','Acne','Hirsutism/alopecia','Polyuria/polydipsia'],
+g_pain:['Site','Onset','Character','Radiation','Associations','Time course','Aggravating/relieving factors','Severity'],
+g_bleed:['Amount','Duration','Relation to cycle','Intermenstrual','Postcoital','Postmenopausal','Clots/flooding','Pain/cramps'],
+g_discharge:['Color','Consistency','Amount','Odor','Pruritus','Vulvovaginal pain','Dysuria','Pelvic pain'],
+g_symptoms:['Urinary frequency','Urgency','Dysuria','Hematuria','Incontinence','Bowel change','Constipation/diarrhea','Rectal bleeding','Breast pain/lump/discharge','Hot flushes/night sweats','Vaginal dryness','Pelvic pressure/prolapse symptoms'],
+g_ros:['General fatigue/fever/weight change','Headache/vision change','Chest pain/palpitations','Dyspnea/cough','Nausea/vomiting/heartburn','Abdominal pain/bowel change','Urinary symptoms','Neurologic symptoms','Skin/hair changes','Hirsutism/acne','Mood/sleep symptoms']
+};
+for(const [id,items] of Object.entries(groups)){const el=$(id);if(el)el.innerHTML=items.map((x,i)=>`<div class="check"><input type="checkbox" id="${id}_${i}" value="${x}"><label for="${id}_${i}">${x}</label></div>`).join('')}
+
+function dateAddDays(d,n){let x=new Date(d);x.setDate(x.getDate()+n);return x}
+function fmt(d){return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}
+function calcDating(){
+ const l=val('ob_lmp'); if(!l){$('ob_edd').value='';$('ob_ga').value='';$('eddKpi').textContent='—';$('gaKpi').textContent='—';return}
+ const d=new Date(l+'T00:00:00'); const edd=dateAddDays(d,280); const now=new Date(); let days=Math.floor((now-d)/86400000);
+ $('ob_edd').value=fmt(edd);$('eddKpi').textContent=fmt(edd);
+ if(days>=0){let w=Math.floor(days/7),r=days%7;$('ob_ga').value=`${w} weeks + ${r} days`;$('gaKpi').textContent=`${w}+${r}`}
+}
+['ob_lmp'].forEach(id=>$(id).addEventListener('input',calcDating));
+function calcBMI(){let w=parseFloat(val('ob_weight')),h=parseFloat(val('ob_height'))/100;if(w>0&&h>0){let b=w/(h*h);$('bmi').textContent=b.toFixed(1);$('bmiCat').textContent=b<18.5?'Underweight':b<25?'Normal range':b<30?'Overweight':'Obesity'}else{$('bmi').textContent='—';$('bmiCat').textContent='—'}}
+['ob_weight','ob_height'].forEach(id=>$(id).addEventListener('input',calcBMI));
+function gtpal(prefix){let g=val(prefix+'_g')||0,t=val(prefix+'_t')||0,p=val(prefix+'_p')||0,a=val(prefix+'_a')||0,l=val(prefix+'_l')||0;return `G${g} T${t} P${p} A${a} L${l}`}
+['ob','g'].forEach(p=>['g','t','p','a','l'].forEach(x=>$(p+'_'+x)?.addEventListener('input',()=>{let s=gtpal(p);if(p==='ob'){$('gtpal').textContent=s}else $('g_gtpal').value=s})));
+function addPregnancy(){
+ const n=document.querySelectorAll('.history-row').length+1;const wrap=document.createElement('div');wrap.className='history-row';
+ wrap.innerHTML=`<div class="row-title">Pregnancy ${n}</div>
+ <label>Year/date<input data-k="date"></label><label>Gestational age<input data-k="ga" placeholder="Term / preterm / weeks"></label>
+ <label>Mode of delivery<input data-k="mode" placeholder="SVD / assisted / CS"></label><label>Sex<input data-k="sex"></label>
+ <label>Birth weight<input data-k="weight"></label><label>Place<input data-k="place"></label>
+ <label>Outcome<input data-k="outcome" placeholder="Living / stillbirth / neonatal death"></label><label>NICU<input data-k="nicu"></label>
+ <label>Complications<textarea data-k="comp"></textarea></label><label>Feeding / vaccination / others<textarea data-k="other"></textarea></label>`;
+ $('pregnancies').appendChild(wrap);
+}
+addPregnancy();
+
+function joinChecks(id){let a=checked(id);return a.length?a.join(', '):''}
+function sentence(label,text){return text?`${label}: ${text}.`:''}
+function getPregs(){return [...document.querySelectorAll('#pregnancies .history-row')].map((r,i)=>{let o={};r.querySelectorAll('[data-k]').forEach(x=>o[x.dataset.k]=x.value.trim());return `Pregnancy ${i+1}: ${Object.entries(o).filter(([,v])=>v).map(([k,v])=>`${k}=${v}`).join('; ')}.`}).filter(x=>!x.endsWith(': .'))}
+function ddxOB(){
+ let s=(val('ob_cc')+' '+joinChecks('ob_warn_checks')+' '+joinChecks('ob_bleed_checks')+' '+joinChecks('ob_pain_checks')).toLowerCase(), arr=[];
+ if(s.includes('bleed'))arr.push('Pregnancy-related bleeding: threatened miscarriage / miscarriage spectrum (early pregnancy), ectopic pregnancy, molar pregnancy; placenta previa or placental abruption in later pregnancy; consider other cervical/vaginal causes.');
+ if(s.includes('pain'))arr.push('Pain in pregnancy: ectopic pregnancy, miscarriage, placental abruption, preterm labor, uterine contractions and non-obstetric gastrointestinal/urinary causes.');
+ if(s.includes('fluid')||s.includes('leak'))arr.push('Fluid leakage: rupture of membranes (including PPROM depending on gestational age); consider urinary or vaginal discharge as alternatives.');
+ if(s.includes('headache')||s.includes('vision')||s.includes('edema'))arr.push('Hypertensive disorders of pregnancy / pre-eclampsia should be considered when compatible symptoms or blood pressure abnormalities are present.');
+ if(s.includes('vomit')||s.includes('nausea'))arr.push('Nausea/vomiting of pregnancy; hyperemesis gravidarum when vomiting is severe with dehydration or metabolic disturbance.');
+ $('ob_ddx').innerHTML=arr.length?'<ul>'+arr.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p class="muted">Enter/select presenting symptoms to surface relevant differential categories.</p>';
+}
+document.querySelectorAll('#ob input,#ob textarea,#ob select').forEach(e=>e.addEventListener('input',ddxOB));ddxOB();
+
+function ddxGYN(){
+ let s=(val('g_cc')+' '+joinChecks('g_pain')+' '+joinChecks('g_bleed')+' '+joinChecks('g_discharge')+' '+joinChecks('g_symptoms')).toLowerCase(),arr=[];
+ if(s.includes('bleed'))arr.push('Abnormal uterine bleeding: pregnancy-related causes when relevant, structural causes (e.g., fibroid/polyp/adenomyosis), ovulatory dysfunction, endometrial pathology and cervical/vaginal causes; postmenopausal bleeding requires assessment for malignancy and benign causes.');
+ if(s.includes('pain'))arr.push('Pelvic pain: dysmenorrhea/endometriosis, ovarian pathology, PID, fibroids/adenomyosis, urinary or gastrointestinal causes; acute severe pain requires urgent assessment for torsion, ectopic pregnancy and other emergencies when applicable.');
+ if(s.includes('discharge'))arr.push('Vaginal discharge/vulvovaginal symptoms: physiologic discharge, bacterial vaginosis, candidiasis, trichomoniasis and cervicitis/STIs depending on features and risk.');
+ if(s.includes('infert')||val('g_inferttype'))arr.push('Infertility: assess ovulatory, tubal/peritoneal, uterine and male-factor contributors; document duration and prior investigations/treatment.');
+ if(s.includes('urinary'))arr.push('Urinary causes: UTI, overactive bladder/incontinence and other urinary tract pathology according to symptoms.');
+ $('g_ddx').innerHTML=arr.length?'<ul>'+arr.map(x=>`<li>${x}</li>`).join('')+'</ul>':'<p class="muted">Enter/select presenting symptoms to surface relevant differential categories.</p>';
+}
+document.querySelectorAll('#gyn input,#gyn textarea,#gyn select').forEach(e=>e.addEventListener('input',ddxGYN));ddxGYN();
+
+function generateOB(){
+ let lines=[];
+ const name=val('ob_name')||'A patient', age=val('ob_age'), g=gtpal('ob');
+ lines.push(`${name}${age?`, ${age} years old`:''}, ${g}.`);
+ lines.push(sentence('Occupation',val('ob_occ'))); lines.push(sentence('Marital status',val('ob_marital')));
+ lines.push(sentence('Blood group/Rh',val('ob_blood'))); lines.push(sentence('Residence',val('ob_address')));
+ if(val('ob_lmp'))lines.push(`LMP was ${val('ob_lmp')}; estimated due date is ${val('ob_edd')||'not calculated'} and estimated gestational age by LMP is ${val('ob_ga')||'not available'}.`);
+ lines.push(sentence('Chief complaint',val('ob_cc')+(val('ob_ccdur')?' for '+val('ob_ccdur'):'')));
+ lines.push(sentence('History of present illness',val('ob_hpi')));
+ const pc=joinChecks('ob_pain_checks'),bl=joinChecks('ob_bleed_checks'),lk=joinChecks('ob_leak_checks'),oh=joinChecks('ob_hpi_checks');
+ if(pc)lines.push(`Pain features reviewed: ${pc}.`);if(bl)lines.push(`Vaginal bleeding features reviewed: ${bl}.`);if(lk)lines.push(`Fluid leakage features reviewed: ${lk}.`);if(oh)lines.push(`Associated obstetric symptoms: ${oh}.`);
+ const w=joinChecks('ob_warn_checks');lines.push(w?`Obstetric warning symptoms reviewed: ${w}.`:'Obstetric warning symptoms were reviewed.');
+ lines.push(`Current pregnancy: conception ${val('ob_conception')||'not stated'}; confirmation ${val('ob_confirm')||'not stated'}; ANC ${val('ob_anc')||'not stated'}; ultrasound/dating summary ${val('ob_us')||'not stated'}.`);
+ ['1','2','3'].forEach(n=>{let c=joinChecks('ob_t'+n),t=val('ob_t'+n+'_notes');if(c||t)lines.push(`Trimester ${n}: ${c?c+'. ':''}${t}`)});
+ const ps=getPregs();if(ps.length)lines.push('Previous obstetric history: '+ps.join(' '));
+ lines.push(`Gynecologic history: menarche ${val('ob_menarche')||'not stated'}; cycle ${val('ob_cycle')||'not stated'}; cycle length ${val('ob_cyclelen')||'not stated'} days; flow ${val('ob_flowdur')||'not stated'} days; amount ${val('ob_flow')||'not stated'}; clots/flooding ${val('ob_clots')||'not stated'}; dysmenorrhea/mittelschmerz ${val('ob_dys')||'not stated'}; intermenstrual/postcoital bleeding ${val('ob_imb')||'not stated'}.`);
+ lines.push(sentence('Contraceptive history',val('ob_contra')));lines.push(sentence('Infertility history',val('ob_infert')));lines.push(sentence('Previous gynecologic conditions',val('ob_gyncond')));lines.push(sentence('Previous gynecologic operations',val('ob_gynops')));
+ lines.push(sentence('Past medical history',val('ob_pmh')));lines.push(sentence('Past surgical history',val('ob_psh')));lines.push(sentence('Medications/supplements',val('ob_meds')));lines.push(sentence('Allergies',val('ob_allergy')));lines.push(sentence('Blood transfusion history',val('ob_transfusion')));lines.push(sentence('Immunization history',val('ob_immun')));
+ lines.push(sentence('Family history',val('ob_fam')));lines.push(sentence('Social history',val('ob_social')));lines.push(sentence('Smoking/substance history',val('ob_smoke')));lines.push(sentence('Relevant exposures',val('ob_exposure')));
+ const ros=joinChecks('ob_ros');lines.push(ros?`Review of systems: ${ros}. ${val('ob_ros_notes')}`:'No additional review-of-systems findings documented.');
+ lines.push(sentence('Hospital course/investigations',val('ob_course'))); lines.push(sentence('Current status',val('ob_status')));
+ $('ob_output').value=lines.filter(Boolean).join('\n\n');
+}
+function generateGYN(){
+ let lines=[],name=val('g_name')||'A patient',age=val('g_age'),g=gtpal('g');
+ lines.push(`${name}${age?`, ${age} years old`:''}, ${g}.`);
+ lines.push(sentence('Occupation',val('g_occ')));lines.push(sentence('Marital status',val('g_marital')));lines.push(sentence('Residence',val('g_address')));
+ lines.push(sentence('Chief complaint',val('g_cc')+(val('g_dur')?' for '+val('g_dur'):'')));lines.push(sentence('History of present illness',val('g_hpi')));
+ ['g_pain','g_bleed','g_discharge','g_symptoms'].forEach((id,i)=>{let a=joinChecks(id);if(a)lines.push(`${['Pain','Bleeding','Discharge/vulvovaginal','Other gynecologic symptom'][i]} features reviewed: ${a}.`)});
+ lines.push(`Menstrual history: menarche ${val('g_menarche')||'not stated'}; LMP ${val('g_lmp')||'not stated'}; cycle ${val('g_cycle')||'not stated'}; cycle length ${val('g_cyclelen')||'not stated'} days; flow duration ${val('g_flowdur')||'not stated'} days; amount ${val('g_flow')||'not stated'}; clots/flooding ${val('g_clots')||'not stated'}; dysmenorrhea/mittelschmerz ${val('g_dys')||'not stated'}; intermenstrual bleeding ${val('g_imb')||'not stated'}; postcoital bleeding ${val('g_pcb')||'not stated'}; premenstrual symptoms ${val('g_pms')||'not stated'}.`);
+ lines.push(sentence('Contraceptive history',val('g_contra')));lines.push(sentence('Past contraceptive methods/complications',val('g_contrapast')+' '+val('g_contracomp')+' '+val('g_contrastop')));
+ lines.push(sentence('Sexual history',val('g_partners')+' '+val('g_frequency')+' '+val('g_dyspareunia')+' '+val('g_postcoital')+' '+val('g_sti')+' '+val('g_safety')));
+ lines.push(sentence('Past gynecologic problems',val('g_gynproblems')));lines.push(sentence('Previous gynecologic/pelvic operations',val('g_gynops')));lines.push(sentence('Infertility history',val('g_inferttype')+' '+val('g_infertwork')));lines.push(sentence('Gynecologic conditions',val('g_conditions')));lines.push(sentence('Cervical screening',val('g_screen')));
+ lines.push(sentence('Menopause/perimenopause history',val('g_meno')+' '+val('g_pmb')+' '+val('g_vaso')+' '+val('g_menosym')+' '+val('g_vagdry')+' '+val('g_hrt')));
+ lines.push(sentence('Past obstetric history',val('g_obhx')));lines.push(sentence('Past medical history',val('g_pmh')));lines.push(sentence('Past surgical/trauma history',val('g_psh')));lines.push(sentence('Medications/supplements/hormones',val('g_meds')));lines.push(sentence('Allergies',val('g_allergy')));lines.push(sentence('Blood transfusion history',val('g_trans')));
+ lines.push(sentence('Family history',val('g_fam')));lines.push(sentence('Social history',val('g_social')));lines.push(sentence('Substance history',val('g_substances')));lines.push(sentence('Relevant exposures',val('g_exposure')));
+ const ros=joinChecks('g_ros');lines.push(ros?`Review of systems: ${ros}. ${val('g_ros_notes')}`:'No additional review-of-systems findings documented.');
+ $('g_output').value=lines.filter(Boolean).join('\n\n');
+}
+function copyOut(id){const el=$(id);navigator.clipboard?.writeText(el.value);el.select();document.execCommand('copy')}
+function printOutput(id){let text=$(id).value;let w=window.open('','_blank');w.document.write(`<html><head><title>OB/GYN History</title><style>body{font:14px Arial;max-width:800px;margin:40px auto;line-height:1.7}pre{white-space:pre-wrap;font:inherit}</style></head><body><pre>${text.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</pre></body></html>`);w.document.close();w.print()}
+function resetForm(screen){if(!confirm('Start a new patient and clear this section?'))return;document.querySelectorAll('#'+screen+' input,#'+screen+' textarea,#'+screen+' select').forEach(e=>{if(e.type==='checkbox')e.checked=false;else e.value=''});if(screen==='ob'){$('pregnancies').innerHTML='';addPregnancy();$('gtpal').textContent='G0 T0 P0 A0 L0';$('bmi').textContent='—';$('bmiCat').textContent='—';$('eddKpi').textContent='—';$('gaKpi').textContent='—'}else $('g_gtpal').value='';ddxOB();ddxGYN()}
+calcDating();calcBMI();
+</script>
+</body>
+</html>
